@@ -1,6 +1,6 @@
 # Phonotypst
 
-A comprehensive phonology toolkit for Typst, providing IPA transcription with tipa-style input and prosodic structure visualization.
+A phonology toolkit for Typst, providing IPA transcription with tipa-style input and prosodic structure visualization.
 
 ## Features
 
