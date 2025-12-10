@@ -1,0 +1,73 @@
+// Phonotypst - Phonology toolkit for Typst
+// Author: Guilherme D. Garcia
+//
+// A comprehensive toolkit for phonological and phonetic notation in Typst.
+//
+// This package provides:
+// - IPA transcription with tipa-style input syntax
+// - Prosodic structure visualization (syllables, feet, prosodic words)
+
+// Import modules
+#import "ipa.typ": ipa
+#import "prosody.typ": syllable, foot, word
+
+// Re-export IPA function
+/// Convert tipa-style notation to IPA symbols
+///
+/// Supports:
+/// - IPA consonants and vowels
+/// - Combining diacritics (\\~, \\r, \\v, \\t for nasal, devoiced, voiced, tie)
+/// - Suprasegmentals (' and , for primary and secondary stress; : for length)
+/// - Automatic character splitting for efficiency
+///
+/// Example: `#ipa("'hEloU")` produces ˈhɛloʊ
+///
+/// Arguments:
+/// - input (string): tipa-style notation
+///
+/// Returns: IPA symbols in Charis SIL font
+#let ipa = ipa
+
+// Re-export Prosody functions
+/// Draw a single syllable's internal structure
+///
+/// Visualizes only the syllable (σ) level with onset, rhyme, nucleus, and coda.
+///
+/// Arguments:
+/// - input (string): A single syllable (e.g., "ka" or "'va")
+///
+/// Returns: CeTZ drawing of syllable structure
+///
+/// Example: `#syllable("man")`
+#let syllable = syllable
+
+/// Draw a foot with syllables
+///
+/// Visualizes foot (Σ) and syllable (σ) levels. All syllables are part of the foot.
+/// Stressed syllables are marked with an apostrophe before the syllable.
+///
+/// Arguments:
+/// - input (string): Syllables separated by dots (e.g., "ka.'va.lo")
+///
+/// Returns: CeTZ drawing of foot structure
+///
+/// Example: `#foot("man.'tal")`
+#let foot = foot
+
+/// Draw a prosodic word structure with explicit foot boundaries
+///
+/// Visualizes prosodic word (PWd), foot (Σ), and syllable (σ) levels.
+/// Use parentheses to mark foot boundaries.
+/// Stressed syllables are marked with an apostrophe before the syllable.
+///
+/// Arguments:
+/// - input (string): Syllables with optional foot markers in parentheses
+/// - foot (string): "R" (right-aligned) or "L" (left-aligned) for PWd alignment (default: "R")
+///
+/// Returns: CeTZ drawing of prosodic structure
+///
+/// Examples:
+/// - `#word("(ka.'va).lo")` - One iamb with two syllables, one footless syllable
+/// - `#word("('ka.va)", foot: "L")` - Trochee
+/// - `#word("ka.va")` - Two footless syllables
+#let word = word
