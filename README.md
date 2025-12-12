@@ -49,7 +49,7 @@ For the most up-to-date information, vignettes and demos, visit the website belo
 
 ```typst
 // Basic transcription
-#ipa("'sIRi")  // → ˈsɪti
+#ipa("'sIRi")  // → ˈsɪɾi
 
 // With nasalization
 #ipa("\\~ E")  // → ɛ̃
@@ -57,7 +57,7 @@ For the most up-to-date information, vignettes and demos, visit the website belo
 // With devoicing
 #ipa("\\r z")  // → z̥
 
-// With voicing
+// Syllabic segments 
 #ipa("\\v n")  // → n̩
 
 // Affricates
