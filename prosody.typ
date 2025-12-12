@@ -328,8 +328,14 @@
 
     let foot-x = start-x + syllable-positions.at(head-idx)
 
+    // Calculate dynamic Ft height based on number of syllables
+    // Ft moves up as syllable count increases, but syllables stay at fixed position
+    let ft-height = -0.9 + (syllables.len() * 0.3)
+    let sigma-y = -2.4  // Fixed position
+    let terminal-y = -5  // Fixed position
+
     // Draw Ft node above the head
-    content((foot-x, -0.9), text(size: 12 * diagram-scale * 1pt)[*Σ*])
+    content((foot-x, ft-height), text(size: 12 * diagram-scale * 1pt)[*Σ*])
 
     // Detect geminates (coda of syll i == onset of syll i+1)
     let geminates = ()
@@ -343,14 +349,12 @@
     // Draw syllables
     for (i, syll) in syllables.enumerate() {
       let x-offset = start-x + syllable-positions.at(i)
-      let sigma-y = -2.4
-      let terminal-y = -5
 
       // Syllable node (σ)
       content((x-offset, sigma-y + 0.54), text(size: 12 * diagram-scale * 1pt)[*σ*])
 
       // Line from Ft to σ
-      line((foot-x, -1.15), (x-offset, sigma-y + 0.8))
+      line((foot-x, ft-height - 0.25), (x-offset, sigma-y + 0.8))
 
       // Check if this syllable has a geminate coda or onset
       let gem-coda-x = none
