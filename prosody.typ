@@ -60,23 +60,73 @@
 }
 
 // Helper function to draw syllable internal structure
-#let draw-syllable-structure(x-offset, sigma-y, syll, terminal-y, diagram-scale: 1.0) = {
+#let draw-syllable-structure(x-offset, sigma-y, syll, terminal-y, diagram-scale: 1.0,
+                            geminate-coda-x: none, geminate-onset-x: none) = {
   import cetz.draw: *
 
   let has-onset = syll.onset != ""
   let has-coda = syll.coda != ""
 
-  let onset-x = if has-onset { x-offset - 0.7 } else { x-offset }
-  let rhyme-x = if has-onset { x-offset + 0.7 } else { x-offset }
-  let nucleus-x = if has-coda { rhyme-x - 0.48 } else { rhyme-x }
-  let coda-x = if has-coda { rhyme-x + 0.35 } else { rhyme-x }
+  // Calculate segment counts for adaptive spacing
+  let onset-segments = if has-onset { syll.onset.codepoints() } else { () }
+  let num-onset = if has-onset { onset-segments.len() } else { 0 }
+
+  let nucleus-segments = syll.nucleus.codepoints()
+  let num-nucleus = nucleus-segments.len()
+
+  let coda-segments = if has-coda { syll.coda.codepoints() } else { () }
+  let num-coda = if has-coda { coda-segments.len() } else { 0 }
+
+  let segment-spacing = 0.35
+  let min-gap = 0.75
+
+  // Headedness: Rhyme is head of syllable, Nucleus is head of Rhyme
+  // Heads align vertically, non-heads are angled
+  let rhyme-x = x-offset  // vertical (head of syllable)
+  let nucleus-x = rhyme-x  // MUST stay at rhyme-x (vertical, head of rhyme)
+
+  // Adaptive positioning for onset (move left if many segments)
+  let onset-x = if has-onset {
+    let min-offset = (num-onset - 1) * segment-spacing / 2 + (num-nucleus - 1) * segment-spacing / 2 + min-gap
+    let default-offset = 0.7
+    if min-offset > default-offset { x-offset - min-offset } else { x-offset - default-offset }
+  } else {
+    x-offset
+  }
+
+  // Adaptive positioning for coda (move right to avoid nucleus segments)
+  let coda-x = if has-coda {
+    let min-offset = (num-nucleus + num-coda - 2) * segment-spacing / 2 + min-gap
+    let default-offset = 0.7
+    if min-offset > default-offset { rhyme-x + min-offset } else { rhyme-x + default-offset }
+  } else {
+    rhyme-x
+  }
 
   // Branches from syllable
   if has-onset {
     line((x-offset, sigma-y + 0.25), (onset-x, sigma-y - 0.45))
     content((onset-x, sigma-y - 0.75), text(size: 10 * diagram-scale * 1pt)[On])
-    line((onset-x, sigma-y - 1.1), (onset-x, terminal-y + 0.30))
-    content((onset-x, terminal-y), text(size: 11 * diagram-scale * 1pt)[#syll.onset], anchor: "north")
+
+    // Branch to each onset segment
+    let onset-segments = syll.onset.codepoints()
+    let num-onset = onset-segments.len()
+
+    // Check if this is a geminate onset
+    if geminate-onset-x != none {
+      // Geminate: draw line to geminate position (text drawn separately)
+      line((onset-x, sigma-y - 1.1), (geminate-onset-x, terminal-y + 0.30))
+    } else {
+      // Normal onset: draw branches to individual segments
+      let onset-total-width = (num-onset - 1) * segment-spacing
+      let onset-start-x = onset-x - onset-total-width / 2
+
+      for (i, segment) in onset-segments.enumerate() {
+        let seg-x = onset-start-x + i * segment-spacing
+        line((onset-x, sigma-y - 1.1), (seg-x, terminal-y + 0.30))
+        content((seg-x, terminal-y), text(size: 11 * diagram-scale * 1pt)[#segment], anchor: "north")
+      }
+    }
   }
 
   // Rhyme branch
@@ -86,15 +136,38 @@
   // Nucleus
   line((rhyme-x, sigma-y - 1.1), (nucleus-x, sigma-y - 1.35))
   content((nucleus-x, sigma-y - 1.65), text(size: 10 * diagram-scale * 1pt)[Nu])
-  line((nucleus-x, sigma-y - 1.9), (nucleus-x, terminal-y + 0.30))
-  content((nucleus-x, terminal-y), text(size: 11 * diagram-scale * 1pt)[#syll.nucleus], anchor: "north")
+
+  // Branch to each nucleus segment
+  let nucleus-total-width = (num-nucleus - 1) * segment-spacing
+  let nucleus-start-x = nucleus-x - nucleus-total-width / 2
+
+  for (i, segment) in nucleus-segments.enumerate() {
+    let seg-x = nucleus-start-x + i * segment-spacing
+    line((nucleus-x, sigma-y - 1.9), (seg-x, terminal-y + 0.30))
+    content((seg-x, terminal-y), text(size: 11 * diagram-scale * 1pt)[#segment], anchor: "north")
+  }
 
   // Coda (if exists)
   if has-coda {
     line((rhyme-x, sigma-y - 1.1), (coda-x, sigma-y - 1.35))
     content((coda-x, sigma-y - 1.65), text(size: 10 * diagram-scale * 1pt)[Co])
-    line((coda-x, sigma-y - 1.9), (coda-x, terminal-y + 0.30))
-    content((coda-x, terminal-y), text(size: 11 * diagram-scale * 1pt)[#syll.coda], anchor: "north")
+
+    // Branch to each coda segment
+    // Check if this is a geminate coda
+    if geminate-coda-x != none {
+      // Geminate: draw line to geminate position (text drawn separately)
+      line((coda-x, sigma-y - 1.9), (geminate-coda-x, terminal-y + 0.30))
+    } else {
+      // Normal coda: draw branches to individual segments
+      let coda-total-width = (num-coda - 1) * segment-spacing
+      let coda-start-x = coda-x - coda-total-width / 2
+
+      for (i, segment) in coda-segments.enumerate() {
+        let seg-x = coda-start-x + i * segment-spacing
+        line((coda-x, sigma-y - 1.9), (seg-x, terminal-y + 0.30))
+        content((seg-x, terminal-y), text(size: 11 * diagram-scale * 1pt)[#segment], anchor: "north")
+      }
+    }
   }
 }
 
@@ -183,18 +256,93 @@
     import cetz.draw: *
     set-style(stroke: 0.7 * diagram-scale * 1pt)
 
-    let spacing = 3.0
-    let num-sylls = syllables.len()
-    let total-width = (num-sylls - 1) * spacing
-    let start-x = -total-width / 2
-    let foot-x = start-x + head-idx * spacing
+    let segment-spacing = 0.35
+    let min-gap-between-sylls = 1.2
+    let default-spacing = 2.2
+
+    // Calculate extents for each syllable
+    let syllable-extents = ()
+    for syll in syllables {
+      let has-onset = syll.onset != ""
+      let has-coda = syll.coda != ""
+      let num-onset = if has-onset { syll.onset.codepoints().len() } else { 0 }
+      let num-nucleus = syll.nucleus.codepoints().len()
+      let num-coda = if has-coda { syll.coda.codepoints().len() } else { 0 }
+      let min-gap = 0.75
+
+      // Calculate constituent positions (same logic as draw-syllable-structure)
+      let onset-x-rel = if has-onset {
+        let min-offset = (num-onset - 1) * segment-spacing / 2 + (num-nucleus - 1) * segment-spacing / 2 + min-gap
+        let default-offset = 0.7
+        if min-offset > default-offset { -min-offset } else { -default-offset }
+      } else { 0 }
+
+      let coda-x-rel = if has-coda {
+        let min-offset = (num-nucleus + num-coda - 2) * segment-spacing / 2 + 0.4
+        let default-offset = 0.7
+        if min-offset > default-offset { min-offset } else { default-offset }
+      } else { 0 }
+
+      // Calculate segment widths
+      let onset-width = if has-onset { (num-onset - 1) * segment-spacing } else { 0 }
+      let nucleus-width = (num-nucleus - 1) * segment-spacing
+      let coda-width = if has-coda { (num-coda - 1) * segment-spacing } else { 0 }
+
+      // Calculate left and right extents relative to syllable center
+      let left-parts = (
+        if has-onset { onset-x-rel - onset-width / 2 } else { 0 },
+        -nucleus-width / 2,
+        if has-coda { coda-x-rel - coda-width / 2 } else { 0 }
+      )
+      let right-parts = (
+        if has-onset { onset-x-rel + onset-width / 2 } else { 0 },
+        nucleus-width / 2,
+        if has-coda { coda-x-rel + coda-width / 2 } else { 0 }
+      )
+
+      let left-extent = calc.min(..left-parts)
+      let right-extent = calc.max(..right-parts)
+
+      syllable-extents.push((left: left-extent, right: right-extent))
+    }
+
+    // Calculate adaptive spacing and positions
+    let syllable-positions = ()
+    for (i, extent) in syllable-extents.enumerate() {
+      if i == 0 {
+        syllable-positions.push(0)
+      } else {
+        let prev-right = syllable-extents.at(i - 1).right
+        let required-spacing = prev-right - extent.left + min-gap-between-sylls
+        let actual-spacing = calc.max(required-spacing, default-spacing)
+        let prev-position = syllable-positions.at(i - 1)
+        syllable-positions.push(prev-position + actual-spacing)
+      }
+    }
+
+    // Center the structure
+    let first-left = syllable-positions.at(0) + syllable-extents.at(0).left
+    let last-right = syllable-positions.at(-1) + syllable-extents.at(-1).right
+    let total-width = last-right - first-left
+    let start-x = -total-width / 2 - first-left
+
+    let foot-x = start-x + syllable-positions.at(head-idx)
 
     // Draw Ft node above the head
     content((foot-x, -0.9), text(size: 12 * diagram-scale * 1pt)[*Σ*])
 
+    // Detect geminates (coda of syll i == onset of syll i+1)
+    let geminates = ()
+    for i in range(syllables.len() - 1) {
+      if syllables.at(i).coda != "" and syllables.at(i).coda == syllables.at(i + 1).onset {
+        let gem-x = start-x + (syllable-positions.at(i) + syllable-positions.at(i + 1)) / 2  // Midpoint between syllables
+        geminates.push((syll-idx: i, gem-x: gem-x, gem-text: syllables.at(i).coda))
+      }
+    }
+
     // Draw syllables
     for (i, syll) in syllables.enumerate() {
-      let x-offset = start-x + i * spacing
+      let x-offset = start-x + syllable-positions.at(i)
       let sigma-y = -2.4
       let terminal-y = -5
 
@@ -204,7 +352,28 @@
       // Line from Ft to σ
       line((foot-x, -1.15), (x-offset, sigma-y + 0.8))
 
-      draw-syllable-structure(x-offset, sigma-y, syll, terminal-y, diagram-scale: diagram-scale)
+      // Check if this syllable has a geminate coda or onset
+      let gem-coda-x = none
+      let gem-onset-x = none
+      for gem in geminates {
+        if gem.syll-idx == i {
+          gem-coda-x = gem.gem-x
+        }
+        if gem.syll-idx == i - 1 {
+          gem-onset-x = gem.gem-x
+        }
+      }
+
+      draw-syllable-structure(x-offset, sigma-y, syll, terminal-y,
+                              diagram-scale: diagram-scale,
+                              geminate-coda-x: gem-coda-x,
+                              geminate-onset-x: gem-onset-x)
+    }
+
+    // Draw geminate segments
+    for gem in geminates {
+      let terminal-y = -5
+      content((gem.gem-x, terminal-y), text(size: 11 * diagram-scale * 1pt)[#gem.gem-text], anchor: "north")
     }
   })
 }
@@ -309,13 +478,75 @@
 
     set-style(stroke: 0.7 * diagram-scale * 1pt)
 
-    let spacing = 3.0
-    let num-sylls = syllables.len()
-    let total-width = (num-sylls - 1) * spacing
-    let start-x = -total-width / 2
+    let segment-spacing = 0.35
+    let min-gap-between-sylls = 1.2
+    let default-spacing = 2.2
+
+    // Calculate extents for each syllable (same as in foot())
+    let syllable-extents = ()
+    for syll in syllables {
+      let has-onset = syll.onset != ""
+      let has-coda = syll.coda != ""
+      let num-onset = if has-onset { syll.onset.codepoints().len() } else { 0 }
+      let num-nucleus = syll.nucleus.codepoints().len()
+      let num-coda = if has-coda { syll.coda.codepoints().len() } else { 0 }
+      let min-gap = 0.75
+
+      let onset-x-rel = if has-onset {
+        let min-offset = (num-onset - 1) * segment-spacing / 2 + (num-nucleus - 1) * segment-spacing / 2 + min-gap
+        let default-offset = 0.7
+        if min-offset > default-offset { -min-offset } else { -default-offset }
+      } else { 0 }
+
+      let coda-x-rel = if has-coda {
+        let min-offset = (num-nucleus + num-coda - 2) * segment-spacing / 2 + 0.4
+        let default-offset = 0.7
+        if min-offset > default-offset { min-offset } else { default-offset }
+      } else { 0 }
+
+      let onset-width = if has-onset { (num-onset - 1) * segment-spacing } else { 0 }
+      let nucleus-width = (num-nucleus - 1) * segment-spacing
+      let coda-width = if has-coda { (num-coda - 1) * segment-spacing } else { 0 }
+
+      let left-parts = (
+        if has-onset { onset-x-rel - onset-width / 2 } else { 0 },
+        -nucleus-width / 2,
+        if has-coda { coda-x-rel - coda-width / 2 } else { 0 }
+      )
+      let right-parts = (
+        if has-onset { onset-x-rel + onset-width / 2 } else { 0 },
+        nucleus-width / 2,
+        if has-coda { coda-x-rel + coda-width / 2 } else { 0 }
+      )
+
+      let left-extent = calc.min(..left-parts)
+      let right-extent = calc.max(..right-parts)
+
+      syllable-extents.push((left: left-extent, right: right-extent))
+    }
+
+    // Calculate adaptive spacing and positions
+    let syllable-positions = ()
+    for (i, extent) in syllable-extents.enumerate() {
+      if i == 0 {
+        syllable-positions.push(0)
+      } else {
+        let prev-right = syllable-extents.at(i - 1).right
+        let required-spacing = prev-right - extent.left + min-gap-between-sylls
+        let actual-spacing = calc.max(required-spacing, default-spacing)
+        let prev-position = syllable-positions.at(i - 1)
+        syllable-positions.push(prev-position + actual-spacing)
+      }
+    }
+
+    // Center the structure
+    let first-left = syllable-positions.at(0) + syllable-extents.at(0).left
+    let last-right = syllable-positions.at(-1) + syllable-extents.at(-1).right
+    let total-width = last-right - first-left
+    let start-x = -total-width / 2 - first-left
 
     // Calculate PWd position (aligned with leftmost or rightmost foot)
-    let pwd-height = 0.5 + (num-sylls * 0.1)
+    let pwd-height = 0.5 + (syllables.len() * 0.1)
     let pwd-x = 0  // default center
 
     if feet.len() > 0 {
@@ -329,15 +560,24 @@
           head-idx = syll-idx
         }
       }
-      pwd-x = start-x + head-idx * spacing
+      pwd-x = start-x + syllable-positions.at(head-idx)
     }
 
     content((pwd-x, pwd-height), text(size: 12 * diagram-scale * 1pt)[*PWd*])
 
+    // Detect geminates (coda of syll i == onset of syll i+1)
+    let geminates = ()
+    for i in range(syllables.len() - 1) {
+      if syllables.at(i).coda != "" and syllables.at(i).coda == syllables.at(i + 1).onset {
+        let gem-x = start-x + (syllable-positions.at(i) + syllable-positions.at(i + 1)) / 2  // Midpoint between syllables
+        geminates.push((syll-idx: i, gem-x: gem-x, gem-text: syllables.at(i).coda))
+      }
+    }
+
     // Draw footless syllables (connect directly to PWd)
     for (i, syll) in syllables.enumerate() {
       if i not in in-foot-set {
-        let x-offset = start-x + i * spacing
+        let x-offset = start-x + syllable-positions.at(i)
         let sigma-y = -2.4
         let terminal-y = -5
 
@@ -347,7 +587,22 @@
         // Line from PWd to σ (footless)
         line((pwd-x, pwd-height - 0.3), (x-offset, sigma-y + 0.75))
 
-        draw-syllable-structure(x-offset, sigma-y, syll, terminal-y, diagram-scale: diagram-scale)
+        // Check if this syllable has a geminate coda or onset
+        let gem-coda-x = none
+        let gem-onset-x = none
+        for gem in geminates {
+          if gem.syll-idx == i {
+            gem-coda-x = gem.gem-x
+          }
+          if gem.syll-idx == i - 1 {
+            gem-onset-x = gem.gem-x
+          }
+        }
+
+        draw-syllable-structure(x-offset, sigma-y, syll, terminal-y,
+                                diagram-scale: diagram-scale,
+                                geminate-coda-x: gem-coda-x,
+                                geminate-onset-x: gem-onset-x)
       }
     }
 
@@ -362,7 +617,7 @@
         }
       }
 
-      let foot-x = start-x + head-idx * spacing
+      let foot-x = start-x + syllable-positions.at(head-idx)
 
       // Draw Ft node above the head
       content((foot-x, -0.9), text(size: 12 * diagram-scale * 1pt)[*Σ*])
@@ -372,7 +627,7 @@
 
       // Draw syllables in this foot
       for syll-idx in foot {
-        let x-offset = start-x + syll-idx * spacing
+        let x-offset = start-x + syllable-positions.at(syll-idx)
         let syll = syllables.at(syll-idx)
         let sigma-y = -2.4
         let terminal-y = -5
@@ -383,8 +638,29 @@
         // Line from Ft to σ (naturally vertical for head, angled for others)
         line((foot-x, -1.15), (x-offset, sigma-y + 0.8))
 
-        draw-syllable-structure(x-offset, sigma-y, syll, terminal-y, diagram-scale: diagram-scale)
+        // Check if this syllable has a geminate coda or onset
+        let gem-coda-x = none
+        let gem-onset-x = none
+        for gem in geminates {
+          if gem.syll-idx == syll-idx {
+            gem-coda-x = gem.gem-x
+          }
+          if gem.syll-idx == syll-idx - 1 {
+            gem-onset-x = gem.gem-x
+          }
+        }
+
+        draw-syllable-structure(x-offset, sigma-y, syll, terminal-y,
+                                diagram-scale: diagram-scale,
+                                geminate-coda-x: gem-coda-x,
+                                geminate-onset-x: gem-onset-x)
       }
+    }
+
+    // Draw geminate segments
+    for gem in geminates {
+      let terminal-y = -5
+      content((gem.gem-x, terminal-y), text(size: 11 * diagram-scale * 1pt)[#gem.gem-text], anchor: "north")
     }
   })
 }

@@ -8,7 +8,7 @@ A phonology toolkit for Typst, providing IPA transcription with tipa-style input
 
 - **tipa-style input**: Use familiar LaTeX tipa notation instead of hunting for Unicode symbols
 - **Comprehensive symbol support**: All IPA consonants, vowels, and other symbols from the tipa chart
-- **Combining diacritics**: Nasalization (`\\~`), devoicing (`\\r`), voicing (`\\v`), and liaison (`\\t`)
+- **Combining diacritics**: Nasalization (`\~`), devoicing (`\r`), voicing (`\v`), and liaison (`\t`)
 - **Suprasegmentals**: Primary stress (`'`), secondary stress (`,`), length (`:`)
 - **Automatic character splitting**: Type `SE` instead of `S E` for efficiency (spacing is necessary around characters using backslashes)
 - **Charis SIL font**: Proper rendering of all IPA symbols
@@ -47,19 +47,19 @@ A phonology toolkit for Typst, providing IPA transcription with tipa-style input
 #ipa("'hEloU")  // → ˈhɛloʊ
 
 // With nasalization
-#ipa("\\~ E")  // → ɛ̃
+#ipa("\~ E")  // → ɛ̃
 
 // With devoicing
-#ipa("\\r s")  // → s̥
+#ipa("\r s")  // → s̥
 
 // With voicing
-#ipa("\\v n")  // → n̩
+#ipa("\v n")  // → n̩
 
 // Affricates
-#ipa("\\t s")  // → t͡s
+#ipa("\t s")  // → t͡s
 
 // Complex example with multiple features
-#ipa("'sIn,t \\ae ks")  // → ˈsɪnˌtæks
+#ipa("'sIn,t \ae ks")  // → ˈsɪnˌtæks
 ```
 
 #### `tipa` Notation Quick Reference
@@ -73,16 +73,16 @@ A phonology toolkit for Typst, providing IPA transcription with tipa-style input
 
 **Multi-character codes** (with backslash, need spaces around them):
 
-- `\\textltailn` → ɲ
-- `\\ae` → æ
+- `\textltailn` → ɲ
+- `\ae` → æ
 - See [tipa chart](http://www.tug.org/tugboat/tb17-2/tb51rei.pdf) for complete list
 
 **Combining diacritics** (need space before target):
 
-- `\\~` → ̃ (nasalization)
-- `\\r` → ̥ (devoicing/voiceless)
-- `\\v` → ̩ (voicing mark)
-- `\\t` → ͡ (tie bar/liaison)
+- `\~` → ̃ (nasalization)
+- `\r` → ̥ (devoicing/voiceless)
+- `\v` → ̩ (voicing mark)
+- `\t` → ͡ (tie bar/liaison)
 
 ### Prosodic Structures
 
@@ -129,6 +129,8 @@ Phonotypst provides three functions for visualizing different levels of prosodic
 - `'` before a syllable marks it as stressed (e.g., `'va`)
 - `()` marks foot boundaries (used in `#word()`)
 - Characters within syllables are automatically parsed into onset, nucleus, and coda
+- Geminates are automatically detected for `#foot()` and `#word`
+- For long vowels, use `vv` instead of using the length diacritic `:`
 
 ### IPA Charts
 
@@ -171,6 +173,7 @@ Phonotypst provides functions for visualizing IPA vowel and consonant inventorie
 **Available consonant language inventories:** all, english, spanish, french, german, italian, japanese, portuguese, russian, arabic
 
 **Chart features:**
+
 - Vowels positioned by frontness, height, and roundedness on trapezoid
 - Consonants organized by place and manner of articulation
 - Voiceless consonants on left, voiced on right in each cell
