@@ -17,7 +17,7 @@ A phonology toolkit for Typst, providing IPA transcription with tipa-style input
 ### Prosody Module
 
 - **Prosodic structure visualization**: Draw syllable structures with onset, nucleus, and coda
-- **Flexible foot structure**: Use parentheses to mark explicit foot boundaries and stress mark to identify headedness (iambs, trochées)
+- **Flexible foot structure**: Use parentheses to mark explicit foot boundaries and stress mark to identify headedness (iambs, trochees)
 - **Stress marking**: Mark stressed syllables with apostrophe `'`
 - **Flexible alignment**: Left or right alignment for prosodic word heads
 
@@ -174,7 +174,7 @@ Phonokit provides three functions for visualizing different levels of prosodic s
 - `'` before a syllable marks it as stressed (e.g., `'va`)
 - `()` marks foot boundaries (used in `#word()`)
 - Characters within syllables are automatically parsed into onset, nucleus, and coda
-- Geminates are automatically detected for `#foot()` and `#word`
+- Geminates are automatically detected for `#foot()` and `#word()`
 - For long vowels, use `vv` instead of using the length diacritic `:`
 
 ## Dependencies
