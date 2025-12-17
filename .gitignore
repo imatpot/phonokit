@@ -1,8 +1,8 @@
 # macOS
 .DS_Store
 
-# Generated PDFs
-*.pdf
+vignette.typ
+references-typst.bib
 
 # Editor and IDE files
 .vscode/
