@@ -13,3 +13,6 @@ references-typst.bib
 
 # Typst build artifacts
 *.log
+
+# Generated badges
+zenodo-badge.svg
