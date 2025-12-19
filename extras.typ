@@ -22,7 +22,7 @@
 
 // NOTE: -- A collection of arrows
 #let aR = text(font: "New Computer Modern", size: 1.5em)[#h(1em)#sym.arrow.r#h(1em)]
-#let ar = text(font: "New Computer Modern", size: 2em)[#sym.arrow.r]
+#let ar = text(font: "New Computer Modern", size: 1em)[#sym.arrow.r]
 #let al = text(font: "New Computer Modern")[#sym.arrow.l]
 #let au = text(font: "New Computer Modern")[#sym.arrow.t]
 #let ad = text(font: "New Computer Modern")[#sym.arrow.b]
