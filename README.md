@@ -1,7 +1,11 @@
 # Phonokit
 
 <div align="center">
-  <img alt="Phonokit" src="https://gdgarcia.ca/typst/logo.png" style="max-width: 100%; width: 300pt">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://gdgarcia.ca/typst/logo_white.png">
+    <source media="(prefers-color-scheme: light)" srcset="https://gdgarcia.ca/typst/logo.png">
+    <img src="https://gdgarcia.ca/typst/logo.png" width="300">
+  </picture>
 </div>
 
 <div align="center">
