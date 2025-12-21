@@ -230,8 +230,8 @@ Phonokit provides functions for visualizing IPA vowel and consonant inventories 
 #consonants("t \\t s d \\t z t \\t S d \\t Z", affricates: true)
 
 // Include aspirated consonants (phonemic aspiration)
-#consonants("mandarin", affricates: true, aspirated: true)  // Shows pʰ, tʰ, kʰ and tsʰ, ʈʂʰ, tɕʰ
-#consonants("all", aspirated: true)  // Shows all aspirated plosives
+#consonants("mandarin", affricates: true, aspirated: true)  
+#consonants("all", aspirated: true)  
 
 // Plot Spanish consonants with custom scale
 #consonants("spanish", scale: 0.6)
