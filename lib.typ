@@ -19,6 +19,7 @@
 #import "ot.typ": *
 #import "extras.typ": *
 #import "vowels.typ": *
+#import "grids.typ": *
 #import "consonants.typ": *
 #import "features.typ": *
 #import "sonority.typ": *
@@ -138,6 +139,36 @@
 /// - `#word("('ka.va)", foot: "L")` - Trochee
 /// - `#word("ka.va", scale: 0.7)` - Two footless syllables, smaller
 #let word = word
+
+// Re-export Metrical Grid function
+/// Create a metrical grid representation for stress and rhythm analysis
+///
+/// Visualizes hierarchical stress levels using stacked × marks above syllables.
+/// This follows metrical grid theory where each level represents a different
+/// metrical prominence tier.
+///
+/// Supports two input formats:
+/// 1. String format (simple, but not IPA-compatible):
+///    - Syllables separated by dots, each ending with a stress level number
+/// 2. Array format (IPA-compatible):
+///    - Array of (syllable, level) tuples
+///
+/// Arguments:
+/// - String format: `met-grid("te2.ne1.see3.Ti3.tans1")`
+/// - Array with IPA: `met-grid(("te", 2), ("ne", 1), ("si", 3), ipa: true)`
+/// - ipa (bool): Automatically convert strings to IPA notation (default: true)
+///
+/// Returns: Table showing syllables with stacked × marks indicating stress levels
+///
+/// Examples:
+/// - `#met-grid("te2.ne1.see3.Ti3.tans1")` - String format
+/// - `#met-grid(("Ten", 2), ("ne", 1), ("see", 3))` - Array format
+/// - `#met-grid(("T", 2), ("E", 1), ("n", 1), ("E", 1), ipa: true)` - Auto-IPA conversion
+///
+/// Note: The string format uses numbers to indicate stress levels, which conflicts
+/// with IPA numeric symbols. For IPA compatibility, use the array format.
+#let met-grid = met-grid
+
 
 // Re-export IPA Chart functions
 /// Plot vowels on an IPA vowel trapezoid

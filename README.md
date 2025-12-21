@@ -1,16 +1,96 @@
-# Phonokit 🪶
+# Phonokit
+
+<div align="center">
+  <img alt="Phonokit" src="https://gdgarcia.ca/typst/logo.png" style="max-width: 100%; width: 300pt">
+</div>
+
+<div align="center">
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17971032.svg)](https://doi.org/10.5281/zenodo.17971032)
+[![Typst Package](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2Fguilhermegarcia%2Fphonokit%2Fmain%2Ftypst.toml&query=%24.package.version&prefix=v&logo=typst&label=package&color=239DAD)](https://typst.app/universe/package/phonokit)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue)](https://github.com/guilhermegarcia/phonokit/blob/main/LICENSE)
+[![User Manual](https://img.shields.io/badge/manual-.pdf-purple)](https://github.com/guilhermegarcia/phonokit/blob/main/vignette.pdf)
 
-A phonology toolkit for Typst, providing IPA transcription with tipa-style input, prosodic structure visualization, and IPA charts for vowels and consonants.
+</div>
 
-🚨 **Charis SIL font is needed** for this package to work as intended. If you don't already have this font installed, visit <https://software.sil.org/charis/download/>. In addition, New Computer Modern is used for arrows.
+⚠️ **Charis SIL font is needed** for this package to work exactly as intended. If you don't already have this font installed, visit <https://software.sil.org/charis/download/>. New Computer Modern is used for arrows.
 
-**⚠️ Note:** This repo contains the most up-to-date version of the package (version under development).
+## Examples
+<!-- img width is set so the table gets evenly spaced by GitHubs css -->
+<table>
+<tr>
+  <td>
+    <a href="gallery/ipa_example.typ">
+      <img src="gallery/ipa_example.png" width="250px">
+    </a>
+  </td>
+  <td>
+    <a href="gallery/consonants_example.typ">
+      <img src="gallery/consonants_example.png" width="250px">
+    </a>
+  </td>
+  <td>
+    <a href="gallery/vowels_example.typ">
+      <img src="gallery/vowels_example.png" width="250px">
+    </a>
+  </td>
+</tr>
+<tr>
+  <td>IPA transcription based on tipa</td>
+  <td>Consonant inventories (with some pre-defined languages for quick plotting)</td>
+  <td>Vowel trapezoids (with some pre-defined languages for quick plotting)</td>
+</tr>
+<tr>
+  <td>
+    <a href="gallery/sonority_example.typ">
+      <img src="gallery/sonority_example.png" width="250px">
+    </a>
+  </td>
+  <td>
+    <a href="gallery/syllable_example.typ">
+      <img src="gallery/syllable_example.png" width="250px">
+    </a>
+  </td>
+  <td>
+    <a href="gallery/word_example.typ">
+      <img src="gallery/word_example.png" width="250px">
+    </a>
+  </td>
+</tr>
+<tr>
+  <td>Sonority profile with syllabification</td>
+  <td>Syllable structure (onset-rhyme and moraic representations)</td>
+  <td>Prosodic word (with metrical parsing)</td>
+</tr>
+<tr>
+  <td>
+    <a href="gallery/ot_example.typ">
+      <img src="gallery/ot_example.png" width="250px">
+    </a>
+  </td>
+  <td>
+      <a href="gallery/maxent_example.typ">
+      <img src="gallery/maxent_example.png" width="250px">
+    </a>
+  </td>
+  <td>
+      <a href="gallery/grid_example.typ">
+      <img src="gallery/grid_example.png" width="250px">
+
+  </td>
+</tr>
+<tr>
+  <td>Optimality theory tableaux with automatic shading</td>
+  <td>MaxEnt tableaux with automatic calculation</td>
+  <td>Metrical grids with support for IPA</td>
+</tr>
+</table>
+
+*Click on the example image to jump to the code.*
 
 ## Features
 
-📝 See `vignette.pdf` in this repo for *thorough* demo of the package.
+See package homepage or GitHub repository for a comprehensive demo (`vignette.pdf`).
 
 ### IPA Module
 
@@ -94,43 +174,10 @@ For the most up-to-date information about the package, vignettes and demos, visi
 
 // Complex example with multiple features
 #ipa("'sIn,t \\ae ks")  // → ˈsɪnˌtæks
+
 ```
 
-#### `tipa` Notation Quick Reference
-
-**Single-character codes** (no space needed):
-
-- Common vowels: `i I e E a A o O u U @`
-- Common consonants: `p b t d k g f v s z S Z m n N l r`
-
-**Multi-character codes**
-
-- `\\textltailn` → ɲ
-- `\\ae` → æ
-- See [`tipa` chart](https://gdgarcia.ca/typst/tipachart.pdf) for complete list
-
-**Diacritics currently supported**:
-
-- Stress: `'` (primary), `,` (secondary)
-- Length: `:` (place after segment)
-- Liaison: `\\t` (place before segment)
-- Devoicing: `\\r` (place before segment)
-- Syllabicity: `\\v` (place before segment)
-- Aspiration: `\\h` (place after segment)
-- Nasal: `\\~` (place before segment)
-- C cedilla: `\\c{c}` (of course, simply typing `ç` is easier depending on your keyboard layout)
-- Unreleased: `\\*` (place after segment)
-
-**Spacing**:
-
-- Empty space: `\\s` (important if you want to transcribe sentences)
-
-**Important:** Anything that has `\\` must not have adjacent characters:
-
-- `\\~ a` is correct for *ã*; `\\~a` is **not** correct
-- `k \\ae t` is correct for *cat*; `k\\aet` is **not** correct
-- `[ \\ae t]` is correct for *at*; `[\\ae t]` is **not** correct
-- `\\ae t` is correct for *at*; `\\aet` is **not** correct
+See package homepage for a complete notation reference.
 
 ### IPA Charts
 
@@ -315,7 +362,7 @@ Comparing #feat-matrix("p") and #feat-matrix("b") shows they differ only in [voi
 - **Consonants**: consonantal, sonorant, continuant, delayed release, approximant, tap, trill, nasal, voice, spread glottis, constricted glottis, labial, round, labiodental, coronal, anterior, distributed, strident, lateral, dorsal, high, low, front, back, tense
 - **Vowels**: syllabic, consonantal, sonorant, continuant, voice, high, low, tense, front, back, round
 
-**Available segments:** All IPA consonants and vowels from Hayes (2009) Introductory Phonology, including single place articulations, complex segments, and all standard vowels.
+**Available segments:** All IPA consonants and vowels from Hayes (2009) *Introductory Phonology*, including single place articulations, complex segments, and all standard vowels.
 
 ### Optimality Theory Tableaux
 

@@ -4,95 +4,140 @@
   // Define TIPA to IPA mappings
   let mappings = (
     // CONSONANTS - Plosives
-    "p": "p", "b": "b", "t": "t", "d": "d",
-    "\\:t": "ʈ", "\\:d": "ɖ",
-    "\\textbardotlessj": "ɟ", "c": "c",
-    "k": "k", "g": "ɡ",
-    "q": "q", "\\;G": "ɢ",
+    "p": "p",
+    "b": "b",
+    "t": "t",
+    "d": "d",
+    "\\:t": "ʈ",
+    "\\:d": "ɖ",
+    "\\textbardotlessj": "ɟ",
+    "\\barredj": "ɟ",
+    "c": "c",
+    "k": "k",
+    "g": "ɡ",
+    "q": "q",
+    "\\;G": "ɢ",
     "?": "ʔ",
     "P": "ʔ",
-
     // CONSONANTS - Nasals
-    "m": "m", "M": "ɱ", "n": "n",
-    "\\:n": "ɳ", "\\textltailn": "ɲ",
-    "N": "ŋ", "\\;N": "ɴ",
-
+    "m": "m",
+    "M": "ɱ",
+    "n": "n",
+    "\\:n": "ɳ",
+    "\\textltailn": "ɲ",
+    "N": "ŋ",
+    "\\;N": "ɴ",
+    "\\nh": "ɲ",
     // CONSONANTS - Trills
-    "\\;B": "ʙ", "r": "r", "\\;R": "ʀ",
-
+    "\\;B": "ʙ",
+    "r": "r",
+    "\\;R": "ʀ",
     // CONSONANTS - Tap or Flap
-    "R": "ɾ", "\\:r": "ɽ",
-
+    "R": "ɾ",
+    "\\:r": "ɽ",
     // CONSONANTS - Fricatives
-    "f": "f", "v": "v",
-    "F": "ɸ", "B": "β",
-    "T": "θ", "D": "ð",
-    "s": "s", "z": "z",
-    "S": "ʃ", "Z": "ʒ",
-    "\\:s": "ʂ", "\\:z": "ʐ",
-    "\\c{c}": "ç", "J": "ʝ",
-    "x": "x", "G": "ɣ",
-    "X": "χ", "K": "ʁ",
-    "\\textcrh": "ħ", "Q": "ʁ",
-    "h": "h", "H": "ɦ",
-
+    "f": "f",
+    "v": "v",
+    "F": "ɸ",
+    "B": "β",
+    "T": "θ",
+    "D": "ð",
+    "s": "s",
+    "z": "z",
+    "S": "ʃ",
+    "Z": "ʒ",
+    "\\:s": "ʂ",
+    "\\:z": "ʐ",
+    "\\c{c}": "ç",
+    "C": "ç",
+    "J": "ʝ",
+    "x": "x",
+    "G": "ɣ",
+    "X": "χ",
+    "K": "ʁ",
+    "\\textcrh": "ħ",
+    "Q": "ʕ",
+    "h": "h",
+    "H": "ɦ",
     // CONSONANTS - Lateral Fricatives
-    "\\textbeltl": "ɬ", "\\textlyoghlig": "ɮ",
-
+    "\\textbeltl": "ɬ",
+    "\\textlyoghlig": "ɮ",
+    "\\l3": "ɮ",
     // CONSONANTS - Approximants
-    "V": "ʋ", "\\*r": "ɹ", "j": "j",
-    "\\textturnmrleg": "ɰ", "\\:R": "ɻ",
-
+    "V": "ʋ",
+    "\\*r": "ɹ",
+    "j": "j",
+    "\\textturnmrleg": "ɰ",
+    "\\:R": "ɻ",
     // CONSONANTS - Lateral Approximants
-    "l": "l", "\\:l": "ɭ", "L": "ʎ", "\\;L": "ʟ",
-
+    "l": "l",
+    "\\:l": "ɭ",
+    "L": "ʎ",
+    "\\;L": "ʟ",
+    // CONSONANTS - Velarized l
+    "\\darkl": "ɫ",
     // OTHER CONSONANTS - Clicks
-    "\\!o": "ʘ", "\\textdoublebarpipe": "ǂ",
+    "\\!o": "ʘ",
+    "\\textdoublebarpipe": "ǂ",
     "||": "ǁ",
-
     // OTHER CONSONANTS - Other
     "\\textbarglotstop": "ʡ",
-
     // OTHER CONSONANTS - Implosives
-    "\\!b": "ɓ", "\\!d": "ɗ", "\\!j": "ʄ",
-    "\\!g": "ɠ", "\\!G": "ʛ",
-
+    "\\!b": "ɓ",
+    "\\!d": "ɗ",
+    "\\!j": "ʄ",
+    "\\!g": "ɠ",
+    "\\!G": "ʛ",
     // OTHER CONSONANTS - Additional Fricatives
-    "\\*w": "ʍ", "\\texththeng": "ɧ", "C": "ç",
-    "\\;H": "ʜ", "\\textctz": "ʦ",
+    "\\*w": "ʍ",
+    "\\texththeng": "ɧ",
+    "\\;H": "ʜ",
+    "\\textctz": "ʦ",
     "\\textbarrevglotstop": "ʢ",
-
     // OTHER CONSONANTS - Approximant/Flap
-    "4": "ɤ", "\\textturnlonglegr": "ɺ",
-
+    "4": "ɤ",
+    "\\textturnlonglegr": "ɺ",
     // VOWELS - Close
-    "i": "i", "I": "ɪ", "y": "y", "Y": "ʏ",
-    "1": "ɨ", "0": "ʉ", "W": "ɯ", "u": "u", "U": "ʊ",
-
+    "i": "i",
+    "I": "ɪ",
+    "y": "y",
+    "Y": "ʏ",
+    "1": "ɨ",
+    "0": "ʉ",
+    "W": "ɯ",
+    "u": "u",
+    "U": "ʊ",
     // VOWELS - Close-mid/Mid
-    "e": "e", "\\o": "ø", "9": "ɘ", "8": "ɵ",
-    "7": "ɤ", "o": "o",
-
+    "e": "e",
+    "\\o": "ø",
+    "9": "ɘ",
+    "8": "ɵ",
+    "7": "ɤ",
+    "o": "o",
     // VOWELS - Mid
     "@": "ə",
-
     // VOWELS - Open-mid
-    "E": "ɛ", "\\oe": "œ", "3": "ɜ",
-    "\\textcloseepsilon": "ɞ", "2": "ʌ", "O": "ɔ",
-
+    "E": "ɛ",
+    "\\oe": "œ",
+    "3": "ɜ",
+    "\\textcloseepsilon": "ɞ",
+    "2": "ʌ",
+    "O": "ɔ",
     // VOWELS - Near-open/Open
-    "\\ae": "æ", "\\OE": "ɶ",
-    "a": "a", "5": "ɐ", "A": "ɑ", "6": "ɒ",
-    "\\schwar": "ɚ", "\\epsilonr": "ɝ",
-
+    "\\ae": "æ",
+    "\\OE": "ɶ",
+    "a": "a",
+    "5": "ɐ",
+    "A": "ɑ",
+    "6": "ɒ",
+    "\\schwar": "ɚ",
+    "\\epsilonr": "ɝ",
     // SUPRASEGMENTALS
-    "'": "ˈ",   // primary stress
-    ",": "ˌ",   // secondary stress
-    ":": "ː",   // length mark
-
+    "'": "ˈ", // primary stress
+    ",": "ˌ", // secondary stress
+    ":": "ː", // length mark
     // SPACING
-    "\\s": " ",  // space
-
+    "\\s": " ", // space
     // ARCHIPHONEMES escaped
     "\\A": "A",
     "\\B": "B",
@@ -125,16 +170,20 @@
   // Define combining diacritics
   // Forward-looking: precede the phoneme in input (e.g., \~ a → ã)
   let forward_diacritics = (
-    "\\~": "̃",  // combining tilde (nasalization)
-    "\\r": "̥",  // combining ring below (devoicing)
-    "\\v": "̩",  // combining vertical line below (voicing)
-    "\\t": "͡",  // combining double inverted breve (tie bar for affricates)
+    "\\~": "̃", // combining tilde (nasalization)
+    "\\r": "̥", // combining ring below (devoicing)
+    "\\v": "̩", // combining vertical line below (voicing)
+    "\\t": "͡", // combining double inverted breve (tie bar for affricates)
+    "\\dental": "̪", // no trailing space
   )
 
   // Backward-looking: follow the phoneme in input (e.g., p \h → pʰ)
   let backward_diacritics = (
-    "\\*": "̚",  // combining left angle above (unreleased)
-    "\\h": "ʰ",  // modifier letter small h (aspirated)
+    "\\*": "̚", // combining left angle above (unreleased)
+    "\\h": "ʰ", // modifier letter small h (aspirated)
+    "\\velar": "ˠ",
+    "\\palatal": "ʲ",
+    "\\labial": "ʷ",
   )
 
   // Split by spaces and process each token

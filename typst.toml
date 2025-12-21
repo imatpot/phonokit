@@ -6,6 +6,6 @@ version = "0.1.0"
 entrypoint = "lib.typ"
 authors = ["Guilherme D. Garcia <guilherme.garcia@lli.ulaval.ca>"]
 license = "MIT"
-description = "A toolkit for typesetting phonology"
+description = "Create phonological representations"
 repository = "https://github.com/guilhermegarcia/phonokit"
 homepage = "https://gdgarcia.ca/phonokit"

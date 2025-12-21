@@ -36,7 +36,9 @@
   width: width,
   height: 0.8em,
   baseline: 50%,
-  stroke: (bottom: 0.5pt + black)
+  stroke: (bottom: 0.5pt + black),
 )
 
+// NOTE: Extrametricality
+#let extra(content) = [⟨#content⟩]
 

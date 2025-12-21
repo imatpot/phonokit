@@ -196,12 +196,12 @@
   // Use box with baseline at bottom (100%) for top alignment
   // Counter-intuitively, this makes the tops align
   box(baseline: 100%)[
-    #stack(
-      dir: ttb,
-      spacing: 1.5em,
+    #grid(
+      columns: 1,
+      row-gutter: 1.5em,
       // Phoneme in large fixed box, anchored at bottom for consistent matrix starting point
       // This ensures all matrices start at exactly the same vertical position
-      box(height: 2em, align(center + bottom, phoneme)),
+      align(center, box(height: 2em, align(bottom, phoneme))),
       // Feature matrix starts at fixed position below
       align(center, matrix)
     )
