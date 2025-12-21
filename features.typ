@@ -3,6 +3,51 @@
 
 #import "ipa.typ": ipa-to-unicode
 
+// Function for feature matrices in SPE notation
+/// Display feature matrix in SPE-style notation
+///
+/// Creates a bracketed vertical list of features using math.vec.
+/// Handles both individual arguments and comma-separated strings.
+///
+/// Arguments:
+/// - args (variadic): Feature specifications (e.g., "+consonantal", "-sonorant")
+///   Can be passed as separate arguments or as a single comma-separated string
+///
+/// Returns: Formatted feature matrix with proper spacing to prevent overlaps
+///
+/// Example:
+/// ```
+/// #feat("+consonantal", "-sonorant", "+voice")
+/// #feat("+cons,-son,+voice")  // comma-separated also works
+/// ```
+#let feat(..args) = {
+  let items = args.pos()
+
+  // 1. Split string if comma-separated
+  if items.len() == 1 and type(items.at(0)) == str and items.at(0).contains(",") {
+    items = items.at(0).split(",")
+  }
+
+  // 2. Style the items (Charis SIL + Larger Size)
+  let features = items.map(i => {
+    let content = if type(i) == str { i.trim() } else { i }
+    // Set font to Charis SIL and size to normal (1em) or larger (e.g., 1.1em)
+    text(font: "Charis SIL", size: 1em, content)
+  })
+
+  // 3. Use math.vec for perfect axis alignment
+  set math.vec(gap: 0.5em)
+  let matrix = math.vec(delim: "[", ..features)
+
+  // 4. Use box with vertical padding to add space around matrices
+  // This prevents overlaps while keeping matrices inline-friendly
+  box(
+    baseline: 50%,
+    inset: (top: 0.5em, bottom: 0.5em),
+    matrix
+  )
+}
+
 // Complete feature specifications for consonants and vowels
 // Features: +, -, or 0 (not applicable/unspecified)
 #let feature-data = (

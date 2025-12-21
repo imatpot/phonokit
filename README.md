@@ -140,13 +140,6 @@ See package homepage or GitHub repository for a comprehensive demo (`vignette.pd
 - **Weighted constraints**: Supports continuous constraint weights
 - **IPA support**: Input and candidate forms can use tipa-style IPA notation
 
-### Extras
-
-- **Feature matrices**: Create SPE-style phonological feature matrices
-- **Sonority profiles**: Visualize strings of phonemes based on their sonority
-- **Flexible input**: Accept features as separate arguments or comma-separated strings
-- **Proper formatting**: Displays features in vertical brackets with appropriate spacing
-
 ## Installation
 
 ### Package Repository
@@ -240,7 +233,7 @@ Phonokit provides functions for visualizing IPA vowel and consonant inventories 
 
 **Notes:**
 
-- The `consonants()` function now accepts tipa-style IPA input
+- The `consonants()` function accepts tipa-style IPA input
 - Use `affricates: true` to show a dedicated affricate row (appears after fricatives)
   - Affricates are displayed **without tie bars** (e.g., tʃ instead of t͡ʃ) since the row label makes it clear
   - `"all"` with affricates shows: pf, bv (labiodental), ts, dz (alveolar), tʃ, dʒ (postalveolar), ʈʂ, ɖʐ (retroflex)
@@ -285,9 +278,9 @@ Phonokit provides three functions for visualizing different levels of prosodic s
 ```typst
 // Visualize syllable weight using moras (μ)
 #mora("ka")  // Light syllable (CV) = 1 mora
-#mora("kan") // Heavy syllable (CVN) = 2 moras (coda doesn't count by default)
+#mora("kan") // Light syllable (CVN) = 1 mora (coda doesn't count by default)
 #mora("kan", coda: true) // Heavy syllable where coda contributes to weight
-#mora("kaa") // Heavy syllable (CVV) = 2 moras
+#mora("ka:") // Heavy syllable (CVV) = 2 moras
 ```
 
 #### Foot Level
@@ -302,7 +295,7 @@ Phonokit provides three functions for visualizing different levels of prosodic s
 
 ```typst
 // Visualize prosodic word (PWd), foot (Σ), and syllable (σ) levels
-#word("(ma.'va).ro")  // One binary iamb; one footless syllable
+#word("(ma.'va).ro")  // One iamb; one footless syllable
 
 // Right-aligned prosodic word (default)
 #word("ma.('va.ro)")  // One trochee; one footless syllable
@@ -313,7 +306,7 @@ Phonokit provides three functions for visualizing different levels of prosodic s
 // A dactyl
 #word("('ka.va.mi)")
 
-// Multiple feet, where foot = main foot/stress
+// Multiple feet, where foot = main foot is to the left
 #word("('ka.ta)('vas.lo)", foot: "L") 
 ```
 
@@ -324,7 +317,7 @@ Phonokit provides three functions for visualizing different levels of prosodic s
 - `()` marks foot boundaries (used in `#word()`)
 - Characters within syllables are automatically parsed into onset, nucleus, and coda
 - Geminates are automatically detected for `#foot()` and `#word()`
-- For long vowels, use `vv` instead of using the length diacritic `:`
+- For long vowels, use `:`; `vv` will produce a complex nucleus
 
 #### Metrical grids
 
@@ -393,16 +386,16 @@ Create OT tableaux with automatic violation marking and shading:
 // Basic OT tableau
 // With IPA input and dashed constraint boundaries
 #tableau(
-  input: "kaesa",
-  candidates: ("kaesa", "ke:sa", "kesa"),
-  constraints: ("Max-μ", "Dep-μ", "*Complex"),
+  input: "kraTa",
+  candidates: ("kra.Ta", "ka.Ta", "ka.ra.Ta"),
+  constraints: ("Max", "Dep", "*Complex"),
   violations: (
-    ("", "", "*!"),
-    ("", "*!", ""),
+    ("", "", "*"),
     ("*!", "", ""),
+    ("", "*!", ""),
   ),
-  winner: 1,
-  dashed-lines: (1, 2)  // Show dashed line after constraints 1 and 2
+  winner: 1, // <- Position of winning cand
+  dashed-lines: (1,) // <- Note the comma
 )
 ```
 
@@ -413,27 +406,17 @@ Create MaxEnt tableaux with probability calculations:
 ```typst
 // MaxEnt tableau with probability visualization
 #maxent(
-  input: "input",
-  candidates: ("cand1", "cand2", "cand3"),
-  constraints: ("Cons-A", "Cons-B"),
-  weights: (2.5, 1.8),
-  violations: (
-    (0, 1),  // cand1: 0 violations of A, 1 of B
-    (1, 0),  // cand2: 1 violation of A, 0 of B
-    (1, 1),  // cand3: 1 violation of A, 1 of B
-  ),
-  visualize: true  // Show probability bars (default)
-)
-
-// Without visualization bars
-#maxent(
-  input: "kaesa",
-  candidates: ("kaesa", "ke:sa"),
-  constraints: ("Max-μ", "Dep-μ"),
-  weights: (3.2, 1.5),
-  violations: ((0, 0), (0, 1)),
-  visualize: false
-)
+    input: "kraTa",
+    candidates: ("[kra.Ta]", "[ka.Ta]", "[ka.ra.Ta]"),
+    constraints: ("Max", "Dep", "*Complex"),
+    weights: (2.5, 1.8, 1),
+    violations: (
+      (0, 0, 1),
+      (1, 0, 0),
+      (0, 1, 0),
+    ),
+    visualize: true, // Show probability bars (default)
+  )
 ```
 
 ## License
