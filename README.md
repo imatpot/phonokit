@@ -121,6 +121,7 @@ See package homepage or GitHub repository for a comprehensive demo (`vignette.pd
 - **Flexible foot structure**: Use parentheses to mark explicit foot boundaries and stress mark to identify headedness (iambs, trochees)
 - **Stress marking**: Mark stressed syllables with apostrophe `'`
 - **Flexible alignment**: Left or right alignment for prosodic word heads
+- **Metrical grids**: Inputs as strings or tuples
 
 ### Optimality Theory Module
 
@@ -324,6 +325,22 @@ Phonokit provides three functions for visualizing different levels of prosodic s
 - Characters within syllables are automatically parsed into onset, nucleus, and coda
 - Geminates are automatically detected for `#foot()` and `#word()`
 - For long vowels, use `vv` instead of using the length diacritic `:`
+
+#### Metrical grids
+
+Easy-to-use function to design metrical grids with two types of inputs (strings or tuples).
+
+```typst
+// Input uses numbers for number xs on grid
+#met-grid("bu3.tter1.fly2"),
+
+// Use tuples to include IPA symbols
+#met-grid(
+    ("b2", 3),
+    ("R \\schwar", 1),
+    ("flaI", 2)
+)
+```
 
 ### SPE Feature Matrices
 
