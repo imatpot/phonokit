@@ -45,28 +45,10 @@
   let base = cluster.codepoints().at(0)
 
   // Check if base is a vowel
-  let base-is-vowel = base in ("a",
-                                "e",
-                                "i",
-                                "o",
-                                "u",
-                                "ɚ",
-                                "ɝ",
-                                "ɯ",
-                                "ɐ",
-                                "ɒ",
-                                "æ",
-                                "ɛ",
-                                "ɪ",
-                                "ɔ",
-                                "ø",
-                                "œ",
-                                "ɨ",
-                                "ʉ",
-                                "ʊ",
-                                "ə",
-                                "ʌ",
-                                "ɑ")
+  let base-is-vowel = (
+    base
+      in ("a", "e", "i", "o", "u", "ɚ", "ɝ", "ɯ", "ɐ", "ɒ", "æ", "ɛ", "ɪ", "ɔ", "ø", "œ", "ɨ", "ʉ", "ʊ", "ə", "ʌ", "ɑ")
+  )
 
   // Also check for diphthongs and precomposed forms as complete clusters
   let cluster-is-vowel = cluster in ("aɪ", "eɪ", "oɪ", "aʊ", "oʊ", "ã", "ẽ", "õ", "ɛ̃", "ɔ̃", "œ̃", "ɑ̃")
@@ -100,7 +82,7 @@
       // This cluster has a tie bar - merge with next cluster (affricate)
       if i + 1 < basic-clusters.len() {
         result.push(current + basic-clusters.at(i + 1))
-        i += 2  // Skip both clusters
+        i += 2 // Skip both clusters
       } else {
         result.push(current)
         i += 1
@@ -108,11 +90,11 @@
     } else if i + 1 < basic-clusters.len() and basic-clusters.at(i + 1) in spacing-modifiers {
       // Next cluster is a spacing modifier - merge with current
       result.push(current + basic-clusters.at(i + 1))
-      i += 2  // Skip both clusters
+      i += 2 // Skip both clusters
     } else if i + 1 < basic-clusters.len() and basic-clusters.at(i + 1) == length-mark {
       // Next cluster is a length mark - merge with current (atomic long vowel)
       result.push(current + basic-clusters.at(i + 1))
-      i += 2  // Skip both clusters
+      i += 2 // Skip both clusters
     } else {
       // Regular cluster
       result.push(current)
@@ -146,10 +128,26 @@
 }
 
 // Helper function to draw syllable internal structure
-#let draw-syllable-structure(x-offset, sigma-y, syll, terminal-y, diagram-scale: 1.0,
-                            geminate-coda-x: none, geminate-onset-x: none,
-                            geminate-coda-text: none, geminate-onset-text: none) = {
+#let draw-syllable-structure(
+  x-offset,
+  sigma-y,
+  syll,
+  terminal-y,
+  diagram-scale: 1.0,
+  geminate-coda-x: none,
+  geminate-onset-x: none,
+  geminate-coda-text: none,
+  geminate-onset-text: none,
+  compact: false,
+) = {
   import cetz.draw: *
+
+  // Choose offset values based on compact mode
+  let (line-offset, text-offset) = if compact {
+    (0.70, 0.40)  // Compact: shorter lines, raised segments
+  } else {
+    (0.30, 0)     // Standard: longer lines, lower segments
+  }
 
   let has-onset = syll.onset != ""
   let has-coda = syll.coda != ""
@@ -170,8 +168,8 @@
 
   // Headedness: Rhyme is head of syllable, Nucleus is head of Rhyme
   // Heads align vertically, non-heads are angled
-  let rhyme-x = x-offset  // vertical (head of syllable)
-  let nucleus-x = rhyme-x  // MUST stay at rhyme-x (vertical, head of rhyme)
+  let rhyme-x = x-offset // vertical (head of syllable)
+  let nucleus-x = rhyme-x // MUST stay at rhyme-x (vertical, head of rhyme)
 
   // Adaptive positioning for onset (move left if many segments)
   let onset-x = if has-onset {
@@ -212,11 +210,11 @@
 
       if is-geminate {
         // Geminate: draw line to geminate position (text drawn separately in geminate section)
-        line((onset-x, sigma-y - 1.1), (geminate-onset-x, terminal-y + 0.30))
+        line((onset-x, sigma-y - 1.1), (geminate-onset-x, terminal-y + line-offset))
       } else {
         // Normal segment: draw line and text
-        line((onset-x, sigma-y - 1.1), (seg-x, terminal-y + 0.30))
-        content((seg-x, terminal-y), text(size: 11 * diagram-scale * 1pt)[#segment], anchor: "north")
+        line((onset-x, sigma-y - 1.1), (seg-x, terminal-y + line-offset))
+        content((seg-x, terminal-y + text-offset), text(size: 11 * diagram-scale * 1pt)[#segment], anchor: "north")
       }
     }
   }
@@ -235,8 +233,8 @@
 
   for (i, segment) in nucleus-segments.enumerate() {
     let seg-x = nucleus-start-x + i * segment-spacing
-    line((nucleus-x, sigma-y - 1.9), (seg-x, terminal-y + 0.30))
-    content((seg-x, terminal-y), text(size: 11 * diagram-scale * 1pt)[#segment], anchor: "north")
+    line((nucleus-x, sigma-y - 1.9), (seg-x, terminal-y + line-offset))
+    content((seg-x, terminal-y + text-offset), text(size: 11 * diagram-scale * 1pt)[#segment], anchor: "north")
   }
 
   // Coda (if exists)
@@ -257,11 +255,11 @@
 
       if is-geminate {
         // Geminate: draw line to geminate position (text drawn separately in geminate section)
-        line((coda-x, sigma-y - 1.9), (geminate-coda-x, terminal-y + 0.30))
+        line((coda-x, sigma-y - 1.9), (geminate-coda-x, terminal-y + line-offset))
       } else {
         // Normal segment: draw line and text
-        line((coda-x, sigma-y - 1.9), (seg-x, terminal-y + 0.30))
-        content((seg-x, terminal-y), text(size: 11 * diagram-scale * 1pt)[#segment], anchor: "north")
+        line((coda-x, sigma-y - 1.9), (seg-x, terminal-y + line-offset))
+        content((seg-x, terminal-y + text-offset), text(size: 11 * diagram-scale * 1pt)[#segment], anchor: "north")
       }
     }
   }
@@ -296,30 +294,38 @@
   // Check for too many codas (limit: 5 to avoid crossing lines)
   let coda-segments-temp = if parsed.coda != "" { smart-clusters(parsed.coda) } else { () }
   if coda-segments-temp.len() > 5 {
-    return text(fill: red, weight: "bold")[⚠ Warning: Too many coda consonants (max 5 to avoid line crossings). Found: #coda-segments-temp.len()]
+    return text(
+      fill: red,
+      weight: "bold",
+    )[⚠ Warning: Too many coda consonants (max 5 to avoid line crossings). Found: #coda-segments-temp.len()]
   }
 
   // Check for too many onsets (limit: 5 to avoid crossing lines)
   let onset-segments-temp = if parsed.onset != "" { smart-clusters(parsed.onset) } else { () }
   if onset-segments-temp.len() > 5 {
-    return text(fill: red, weight: "bold")[⚠ Warning: Too many onset consonants (max 5 to avoid line crossings). Found: #onset-segments-temp.len()]
+    return text(
+      fill: red,
+      weight: "bold",
+    )[⚠ Warning: Too many onset consonants (max 5 to avoid line crossings). Found: #onset-segments-temp.len()]
   }
 
   // Check for too many nucleus segments (limit: 5)
   let nucleus-segments-temp = smart-clusters(parsed.nucleus)
   if nucleus-segments-temp.len() > 5 {
-    return text(fill: red, weight: "bold")[⚠ Warning: Too many nucleus segments (max 5 to avoid line crossings). Found: #nucleus-segments-temp.len()]
+    return text(
+      fill: red,
+      weight: "bold",
+    )[⚠ Warning: Too many nucleus segments (max 5 to avoid line crossings). Found: #nucleus-segments-temp.len()]
   }
   let syll = (
     onset: parsed.onset,
     nucleus: parsed.nucleus,
     coda: parsed.coda,
-    stressed: stressed
+    stressed: stressed,
   )
 
   let diagram-scale = scale
-  box(baseline: 50%,
-  cetz.canvas(length: 1cm * diagram-scale, {
+  box(baseline: 50%, cetz.canvas(length: 1cm * diagram-scale, {
     import cetz.draw: *
     set-style(stroke: 0.7 * diagram-scale * 1pt)
 
@@ -330,7 +336,7 @@
     // Syllable node (σ)
     content((x-offset, sigma-y + 0.54), text(size: 12 * diagram-scale * 1pt)[*σ*])
 
-    draw-syllable-structure(x-offset, sigma-y, syll, terminal-y, diagram-scale: diagram-scale)
+    draw-syllable-structure(x-offset, sigma-y, syll, terminal-y, diagram-scale: diagram-scale, compact: true)
   }))
 }
 
@@ -364,24 +370,32 @@
   // Check for too many codas (limit: 5 to avoid crossing lines)
   let coda-segments-temp = if parsed.coda != "" { smart-clusters(parsed.coda) } else { () }
   if coda-segments-temp.len() > 5 {
-    return text(fill: red, weight: "bold")[⚠ Warning: Too many coda consonants (max 5 to avoid line crossings). Found: #coda-segments-temp.len()]
+    return text(
+      fill: red,
+      weight: "bold",
+    )[⚠ Warning: Too many coda consonants (max 5 to avoid line crossings). Found: #coda-segments-temp.len()]
   }
 
   // Check for too many onsets (limit: 5 to avoid crossing lines)
   let onset-segments-temp = if parsed.onset != "" { smart-clusters(parsed.onset) } else { () }
   if onset-segments-temp.len() > 5 {
-    return text(fill: red, weight: "bold")[⚠ Warning: Too many onset consonants (max 5 to avoid line crossings). Found: #onset-segments-temp.len()]
+    return text(
+      fill: red,
+      weight: "bold",
+    )[⚠ Warning: Too many onset consonants (max 5 to avoid line crossings). Found: #onset-segments-temp.len()]
   }
 
   // Check for too many nucleus segments (limit: 5)
   let nucleus-segments-temp = smart-clusters(parsed.nucleus)
   if nucleus-segments-temp.len() > 5 {
-    return text(fill: red, weight: "bold")[⚠ Warning: Too many nucleus segments (max 5 to avoid line crossings). Found: #nucleus-segments-temp.len()]
+    return text(
+      fill: red,
+      weight: "bold",
+    )[⚠ Warning: Too many nucleus segments (max 5 to avoid line crossings). Found: #nucleus-segments-temp.len()]
   }
 
   let diagram-scale = scale
-  box(baseline: 50%, 
-  cetz.canvas(length: 1cm * diagram-scale, {
+  box(baseline: 50%, cetz.canvas(length: 1cm * diagram-scale, {
     import cetz.draw: *
     set-style(stroke: 0.7 * diagram-scale * 1pt)
 
@@ -524,8 +538,16 @@
 }
 
 // Helper function to draw moraic structure (used by foot.mora and word.mora)
-#let draw-moraic-structure(x-offset, sigma-y, syll, terminal-y, coda: false, diagram-scale: 1.0,
-                           geminate-coda-x: none, geminate-onset-x: none) = {
+#let draw-moraic-structure(
+  x-offset,
+  sigma-y,
+  syll,
+  terminal-y,
+  coda: false,
+  diagram-scale: 1.0,
+  geminate-coda-x: none,
+  geminate-onset-x: none,
+) = {
   import cetz.draw: *
 
   let segment-spacing = 0.35
@@ -670,7 +692,10 @@
 #let foot(input, scale: 1.0) = {
   // Check for parentheses (foot should not have multiple feet)
   if input.contains("(") or input.contains(")") {
-    return text(fill: red, weight: "bold")[⚠ Warning: foot() is for a single foot. If you need multiple feet, use word() instead.]
+    return text(
+      fill: red,
+      weight: "bold",
+    )[⚠ Warning: foot() is for a single foot. If you need multiple feet, use word() instead.]
   }
 
   // Convert IPA-style input to Unicode
@@ -693,7 +718,7 @@
           onset: parsed.onset,
           nucleus: parsed.nucleus,
           coda: parsed.coda,
-          stressed: buffer.starts-with("'")
+          stressed: buffer.starts-with("'"),
         ))
         buffer = ""
       }
@@ -711,7 +736,7 @@
       onset: parsed.onset,
       nucleus: parsed.nucleus,
       coda: parsed.coda,
-      stressed: buffer.starts-with("'")
+      stressed: buffer.starts-with("'"),
     ))
   }
 
@@ -719,15 +744,24 @@
   for (i, syll) in syllables.enumerate() {
     let coda-segments-temp = if syll.coda != "" { smart-clusters(syll.coda) } else { () }
     if coda-segments-temp.len() > 5 {
-      return text(fill: red, weight: "bold")[⚠ Warning: Too many coda consonants in syllable #(i + 1) (max 5 to avoid line crossings). Found: #coda-segments-temp.len()]
+      return text(
+        fill: red,
+        weight: "bold",
+      )[⚠ Warning: Too many coda consonants in syllable #(i + 1) (max 5 to avoid line crossings). Found: #coda-segments-temp.len()]
     }
     let onset-segments-temp = if syll.onset != "" { smart-clusters(syll.onset) } else { () }
     if onset-segments-temp.len() > 5 {
-      return text(fill: red, weight: "bold")[⚠ Warning: Too many onset consonants in syllable #(i + 1) (max 5 to avoid line crossings). Found: #onset-segments-temp.len()]
+      return text(
+        fill: red,
+        weight: "bold",
+      )[⚠ Warning: Too many onset consonants in syllable #(i + 1) (max 5 to avoid line crossings). Found: #onset-segments-temp.len()]
     }
     let nucleus-segments-temp = smart-clusters(syll.nucleus)
     if nucleus-segments-temp.len() > 5 {
-      return text(fill: red, weight: "bold")[⚠ Warning: Too many nucleus segments in syllable #(i + 1) (max 5 to avoid line crossings). Found: #nucleus-segments-temp.len()]
+      return text(
+        fill: red,
+        weight: "bold",
+      )[⚠ Warning: Too many nucleus segments in syllable #(i + 1) (max 5 to avoid line crossings). Found: #nucleus-segments-temp.len()]
     }
   }
 
@@ -741,8 +775,7 @@
 
   let diagram-scale = scale
 
-  box(baseline: 50%, 
-  cetz.canvas(length: 1cm * diagram-scale, {
+  box(baseline: 50%, cetz.canvas(length: 1cm * diagram-scale, {
     import cetz.draw: *
     set-style(stroke: 0.7 * diagram-scale * 1pt)
 
@@ -782,12 +815,12 @@
       let left-parts = (
         if has-onset { onset-x-rel - onset-width / 2 } else { 0 },
         -nucleus-width / 2,
-        if has-coda { coda-x-rel - coda-width / 2 } else { 0 }
+        if has-coda { coda-x-rel - coda-width / 2 } else { 0 },
       )
       let right-parts = (
         if has-onset { onset-x-rel + onset-width / 2 } else { 0 },
         nucleus-width / 2,
-        if has-coda { coda-x-rel + coda-width / 2 } else { 0 }
+        if has-coda { coda-x-rel + coda-width / 2 } else { 0 },
       )
 
       let left-extent = calc.min(..left-parts)
@@ -870,12 +903,17 @@
         }
       }
 
-      draw-syllable-structure(x-offset, sigma-y, syll, terminal-y,
-                              diagram-scale: diagram-scale,
-                              geminate-coda-x: gem-coda-x,
-                              geminate-onset-x: gem-onset-x,
-                              geminate-coda-text: gem-coda-text,
-                              geminate-onset-text: gem-onset-text)
+      draw-syllable-structure(
+        x-offset,
+        sigma-y,
+        syll,
+        terminal-y,
+        diagram-scale: diagram-scale,
+        geminate-coda-x: gem-coda-x,
+        geminate-onset-x: gem-onset-x,
+        geminate-coda-text: gem-coda-text,
+        geminate-onset-text: gem-onset-text,
+      )
     }
 
     // Draw geminate segments
@@ -915,7 +953,7 @@
           onset: parsed.onset,
           nucleus: parsed.nucleus,
           coda: parsed.coda,
-          stressed: buffer.starts-with("'")
+          stressed: buffer.starts-with("'"),
         ))
         current-foot.push(syllables.len() - 1)
         buffer = ""
@@ -932,7 +970,7 @@
           onset: parsed.onset,
           nucleus: parsed.nucleus,
           coda: parsed.coda,
-          stressed: buffer.starts-with("'")
+          stressed: buffer.starts-with("'"),
         ))
 
         if in-foot {
@@ -956,7 +994,7 @@
       onset: parsed.onset,
       nucleus: parsed.nucleus,
       coda: parsed.coda,
-      stressed: buffer.starts-with("'")
+      stressed: buffer.starts-with("'"),
     ))
 
     if in-foot {
@@ -968,15 +1006,24 @@
   for (i, syll) in syllables.enumerate() {
     let coda-segments-temp = if syll.coda != "" { smart-clusters(syll.coda) } else { () }
     if coda-segments-temp.len() > 5 {
-      return text(fill: red, weight: "bold")[⚠ Warning: Too many coda consonants in syllable #(i + 1) (max 5 to avoid line crossings). Found: #coda-segments-temp.len()]
+      return text(
+        fill: red,
+        weight: "bold",
+      )[⚠ Warning: Too many coda consonants in syllable #(i + 1) (max 5 to avoid line crossings). Found: #coda-segments-temp.len()]
     }
     let onset-segments-temp = if syll.onset != "" { smart-clusters(syll.onset) } else { () }
     if onset-segments-temp.len() > 5 {
-      return text(fill: red, weight: "bold")[⚠ Warning: Too many onset consonants in syllable #(i + 1) (max 5 to avoid line crossings). Found: #onset-segments-temp.len()]
+      return text(
+        fill: red,
+        weight: "bold",
+      )[⚠ Warning: Too many onset consonants in syllable #(i + 1) (max 5 to avoid line crossings). Found: #onset-segments-temp.len()]
     }
     let nucleus-segments-temp = smart-clusters(syll.nucleus)
     if nucleus-segments-temp.len() > 5 {
-      return text(fill: red, weight: "bold")[⚠ Warning: Too many nucleus segments in syllable #(i + 1) (max 5 to avoid line crossings). Found: #nucleus-segments-temp.len()]
+      return text(
+        fill: red,
+        weight: "bold",
+      )[⚠ Warning: Too many nucleus segments in syllable #(i + 1) (max 5 to avoid line crossings). Found: #nucleus-segments-temp.len()]
     }
   }
 
@@ -991,8 +1038,7 @@
   let diagram-scale = scale
 
   // Draw the structure
-  box(baseline: 50%,
-  cetz.canvas(length: 1cm * diagram-scale, {
+  box(baseline: 50%, cetz.canvas(length: 1cm * diagram-scale, {
     import cetz.draw: *
 
     set-style(stroke: 0.7 * diagram-scale * 1pt)
@@ -1030,12 +1076,12 @@
       let left-parts = (
         if has-onset { onset-x-rel - onset-width / 2 } else { 0 },
         -nucleus-width / 2,
-        if has-coda { coda-x-rel - coda-width / 2 } else { 0 }
+        if has-coda { coda-x-rel - coda-width / 2 } else { 0 },
       )
       let right-parts = (
         if has-onset { onset-x-rel + onset-width / 2 } else { 0 },
         nucleus-width / 2,
-        if has-coda { coda-x-rel + coda-width / 2 } else { 0 }
+        if has-coda { coda-x-rel + coda-width / 2 } else { 0 },
       )
 
       let left-extent = calc.min(..left-parts)
@@ -1159,12 +1205,17 @@
           }
         }
 
-        draw-syllable-structure(x-offset, sigma-y, syll, terminal-y,
-                                diagram-scale: diagram-scale,
-                                geminate-coda-x: gem-coda-x,
-                                geminate-onset-x: gem-onset-x,
-                                geminate-coda-text: gem-coda-text,
-                                geminate-onset-text: gem-onset-text)
+        draw-syllable-structure(
+          x-offset,
+          sigma-y,
+          syll,
+          terminal-y,
+          diagram-scale: diagram-scale,
+          geminate-coda-x: gem-coda-x,
+          geminate-onset-x: gem-onset-x,
+          geminate-coda-text: gem-coda-text,
+          geminate-onset-text: gem-onset-text,
+        )
       }
     }
 
@@ -1188,7 +1239,7 @@
         let sigma-y = -2.4
         let terminal-y = -5
 
-        content((x-offset, sigma-y+0.54), text(size: 12 * diagram-scale * 1pt)[*σ*])
+        content((x-offset, sigma-y + 0.54), text(size: 12 * diagram-scale * 1pt)[*σ*])
         line((foot-x, -1.15), (x-offset, sigma-y + 0.8))
 
         let gem-coda-x = none
@@ -1206,12 +1257,17 @@
           }
         }
 
-        draw-syllable-structure(x-offset, sigma-y, syll, terminal-y,
-                                diagram-scale: diagram-scale,
-                                geminate-coda-x: gem-coda-x,
-                                geminate-onset-x: gem-onset-x,
-                                geminate-coda-text: gem-coda-text,
-                                geminate-onset-text: gem-onset-text)
+        draw-syllable-structure(
+          x-offset,
+          sigma-y,
+          syll,
+          terminal-y,
+          diagram-scale: diagram-scale,
+          geminate-coda-x: gem-coda-x,
+          geminate-onset-x: gem-onset-x,
+          geminate-coda-text: gem-coda-text,
+          geminate-onset-text: gem-onset-text,
+        )
       }
     }
 
@@ -1254,7 +1310,7 @@
           onset: parsed.onset,
           nucleus: parsed.nucleus,
           coda: parsed.coda,
-          stressed: buffer.starts-with("'")
+          stressed: buffer.starts-with("'"),
         ))
         buffer = ""
       }
@@ -1274,7 +1330,7 @@
       onset: parsed.onset,
       nucleus: parsed.nucleus,
       coda: parsed.coda,
-      stressed: buffer.starts-with("'")
+      stressed: buffer.starts-with("'"),
     ))
   }
 
@@ -1282,15 +1338,24 @@
   for (i, syll) in syllables.enumerate() {
     let coda-segments-temp = if syll.coda != "" { smart-clusters(syll.coda) } else { () }
     if coda-segments-temp.len() > 5 {
-      return text(fill: red, weight: "bold")[⚠ Warning: Too many coda consonants in syllable #(i + 1) (max 5 to avoid line crossings). Found: #coda-segments-temp.len()]
+      return text(
+        fill: red,
+        weight: "bold",
+      )[⚠ Warning: Too many coda consonants in syllable #(i + 1) (max 5 to avoid line crossings). Found: #coda-segments-temp.len()]
     }
     let onset-segments-temp = if syll.onset != "" { smart-clusters(syll.onset) } else { () }
     if onset-segments-temp.len() > 5 {
-      return text(fill: red, weight: "bold")[⚠ Warning: Too many onset consonants in syllable #(i + 1) (max 5 to avoid line crossings). Found: #onset-segments-temp.len()]
+      return text(
+        fill: red,
+        weight: "bold",
+      )[⚠ Warning: Too many onset consonants in syllable #(i + 1) (max 5 to avoid line crossings). Found: #onset-segments-temp.len()]
     }
     let nucleus-segments-temp = smart-clusters(syll.nucleus)
     if nucleus-segments-temp.len() > 5 {
-      return text(fill: red, weight: "bold")[⚠ Warning: Too many nucleus segments in syllable #(i + 1) (max 5 to avoid line crossings). Found: #nucleus-segments-temp.len()]
+      return text(
+        fill: red,
+        weight: "bold",
+      )[⚠ Warning: Too many nucleus segments in syllable #(i + 1) (max 5 to avoid line crossings). Found: #nucleus-segments-temp.len()]
     }
   }
 
@@ -1304,14 +1369,13 @@
 
   let diagram-scale = scale
 
-  box(baseline: 50%, 
-  cetz.canvas(length: 1cm * diagram-scale, {
+  box(baseline: 50%, cetz.canvas(length: 1cm * diagram-scale, {
     import cetz.draw: *
     set-style(stroke: 0.7 * diagram-scale * 1pt)
 
     let segment-spacing = 0.35
-    let min-gap-between-sylls = 0.8  // Same as foot() to prevent overlap
-    let default-spacing = 1.6  // Same as foot() to prevent overlap
+    let min-gap-between-sylls = 0.8 // Same as foot() to prevent overlap
+    let default-spacing = 1.6 // Same as foot() to prevent overlap
 
     // Calculate extents for each syllable
     let syllable-extents = ()
@@ -1346,12 +1410,12 @@
       let left-parts = (
         if has-onset { onset-x-rel - onset-width / 2 } else { 0 },
         -nucleus-width / 2,
-        if has-coda { coda-x-rel - coda-width / 2 } else { 0 }
+        if has-coda { coda-x-rel - coda-width / 2 } else { 0 },
       )
       let right-parts = (
         if has-onset { onset-x-rel + onset-width / 2 } else { 0 },
         nucleus-width / 2,
-        if has-coda { coda-x-rel + coda-width / 2 } else { 0 }
+        if has-coda { coda-x-rel + coda-width / 2 } else { 0 },
       )
 
       let left-extent = calc.min(..left-parts)
@@ -1430,11 +1494,16 @@
         }
       }
 
-      draw-moraic-structure(x-offset, sigma-y, syll, terminal-y,
-                            coda: coda,
-                            diagram-scale: diagram-scale,
-                            geminate-coda-x: gem-coda-x,
-                            geminate-onset-x: gem-onset-x)
+      draw-moraic-structure(
+        x-offset,
+        sigma-y,
+        syll,
+        terminal-y,
+        coda: coda,
+        diagram-scale: diagram-scale,
+        geminate-coda-x: gem-coda-x,
+        geminate-onset-x: gem-onset-x,
+      )
     }
 
     // Draw geminate segments
@@ -1482,7 +1551,7 @@
           onset: parsed.onset,
           nucleus: parsed.nucleus,
           coda: parsed.coda,
-          stressed: buffer.starts-with("'")
+          stressed: buffer.starts-with("'"),
         ))
         current-foot.push(syllables.len() - 1)
         buffer = ""
@@ -1499,7 +1568,7 @@
           onset: parsed.onset,
           nucleus: parsed.nucleus,
           coda: parsed.coda,
-          stressed: buffer.starts-with("'")
+          stressed: buffer.starts-with("'"),
         ))
 
         if in-foot {
@@ -1523,7 +1592,7 @@
       onset: parsed.onset,
       nucleus: parsed.nucleus,
       coda: parsed.coda,
-      stressed: buffer.starts-with("'")
+      stressed: buffer.starts-with("'"),
     ))
 
     if in-foot {
@@ -1535,15 +1604,24 @@
   for (i, syll) in syllables.enumerate() {
     let coda-segments-temp = if syll.coda != "" { smart-clusters(syll.coda) } else { () }
     if coda-segments-temp.len() > 5 {
-      return text(fill: red, weight: "bold")[⚠ Warning: Too many coda consonants in syllable #(i + 1) (max 5 to avoid line crossings). Found: #coda-segments-temp.len()]
+      return text(
+        fill: red,
+        weight: "bold",
+      )[⚠ Warning: Too many coda consonants in syllable #(i + 1) (max 5 to avoid line crossings). Found: #coda-segments-temp.len()]
     }
     let onset-segments-temp = if syll.onset != "" { smart-clusters(syll.onset) } else { () }
     if onset-segments-temp.len() > 5 {
-      return text(fill: red, weight: "bold")[⚠ Warning: Too many onset consonants in syllable #(i + 1) (max 5 to avoid line crossings). Found: #onset-segments-temp.len()]
+      return text(
+        fill: red,
+        weight: "bold",
+      )[⚠ Warning: Too many onset consonants in syllable #(i + 1) (max 5 to avoid line crossings). Found: #onset-segments-temp.len()]
     }
     let nucleus-segments-temp = smart-clusters(syll.nucleus)
     if nucleus-segments-temp.len() > 5 {
-      return text(fill: red, weight: "bold")[⚠ Warning: Too many nucleus segments in syllable #(i + 1) (max 5 to avoid line crossings). Found: #nucleus-segments-temp.len()]
+      return text(
+        fill: red,
+        weight: "bold",
+      )[⚠ Warning: Too many nucleus segments in syllable #(i + 1) (max 5 to avoid line crossings). Found: #nucleus-segments-temp.len()]
     }
   }
 
@@ -1558,8 +1636,7 @@
   let diagram-scale = scale
 
   // Draw the structure
-  box(baseline: 50%, 
-  cetz.canvas(length: 1cm * diagram-scale, {
+  box(baseline: 50%, cetz.canvas(length: 1cm * diagram-scale, {
     import cetz.draw: *
 
     set-style(stroke: 0.7 * diagram-scale * 1pt)
@@ -1602,12 +1679,12 @@
       let left-parts = (
         if has-onset { onset-x-rel - onset-width / 2 } else { 0 },
         -nucleus-width / 2,
-        if has-coda { coda-x-rel - coda-width / 2 } else { 0 }
+        if has-coda { coda-x-rel - coda-width / 2 } else { 0 },
       )
       let right-parts = (
         if has-onset { onset-x-rel + onset-width / 2 } else { 0 },
         nucleus-width / 2,
-        if has-coda { coda-x-rel + coda-width / 2 } else { 0 }
+        if has-coda { coda-x-rel + coda-width / 2 } else { 0 },
       )
 
       let left-extent = calc.min(..left-parts)
@@ -1764,11 +1841,16 @@
         }
       }
 
-      draw-moraic-structure(x-offset, sigma-y, syll, terminal-y,
-                            coda: coda,
-                            diagram-scale: diagram-scale,
-                            geminate-coda-x: gem-coda-x,
-                            geminate-onset-x: gem-onset-x)
+      draw-moraic-structure(
+        x-offset,
+        sigma-y,
+        syll,
+        terminal-y,
+        coda: coda,
+        diagram-scale: diagram-scale,
+        geminate-coda-x: gem-coda-x,
+        geminate-onset-x: gem-onset-x,
+      )
     }
 
     // Draw geminate segments
