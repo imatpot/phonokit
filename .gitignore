@@ -2,7 +2,7 @@
 .DS_Store
 
 vignette.typ
-references-typst.bib
+references.bib
 
 # Editor and IDE files
 .vscode/
