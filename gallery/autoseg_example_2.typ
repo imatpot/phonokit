@@ -7,7 +7,7 @@
   spacing: 0.5,
   tone: true,
   baseline: 50%,
-  gloss: [èbě],
+  gloss: [],
 )
 #a-r
 #autoseg(
@@ -17,6 +17,6 @@
   spacing: 0.5,
   baseline: 50%,
   tone: true,
-  gloss: [ _pumpkin_],
+  gloss: [èbě _pumpkin_],
 )
 

@@ -6,6 +6,6 @@
   features: ("", "", "[+nas]", ""),
   links: ((2, 1),),
   spacing: 1.0,
-  arrow: true,
+  arrow: false,
 )
 
