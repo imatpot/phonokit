@@ -205,6 +205,33 @@
   "arabic": "",
 )
 
+// Helper function to extract affricates from braces {affricate}
+#let extract-affricates(input) = {
+  let affricates = ()
+  let cleaned = ""
+  let in-braces = false
+  let current-affricate = ""
+
+  for char in input.clusters() {
+    if char == "{" {
+      in-braces = true
+      current-affricate = ""
+    } else if char == "}" {
+      if in-braces and current-affricate != "" {
+        affricates.push(current-affricate)
+      }
+      in-braces = false
+      current-affricate = ""
+    } else if in-braces {
+      current-affricate += char
+    } else {
+      cleaned += char
+    }
+  }
+
+  (affricates: affricates, cleaned: cleaned)
+}
+
 // Main consonants function
 #let consonants(
   consonant-string,
@@ -219,6 +246,7 @@
 ) = {
   // Determine which consonants to plot
   let consonants-to-plot = ""
+  let custom-affricates-string = ""
   let error-msg = none
 
   // Check if consonant-string is actually a language name
@@ -232,9 +260,19 @@
       error-msg = [*Error:* Language "#lang" not available. \ Available languages: #available]
     }
   } else if consonant-string != "" {
-    // Use as manual consonant specification - convert IPA notation to Unicode
-    // Note: Affricates, diacritics, and non-consonant symbols will be ignored during plotting
-    consonants-to-plot = ipa-to-unicode(consonant-string)
+    // Use as manual consonant specification
+    // Extract affricates in braces first
+    let extracted = extract-affricates(consonant-string)
+
+    // Convert IPA notation to Unicode for consonants (excluding braced affricates)
+    consonants-to-plot = ipa-to-unicode(extracted.cleaned)
+
+    // Convert each affricate separately and store as a string
+    let converted-affricates = ()
+    for aff in extracted.affricates {
+      converted-affricates.push(ipa-to-unicode(aff))
+    }
+    custom-affricates-string = converted-affricates.join("")
   } else {
     error-msg = [*Error:* Either provide consonant string or language name]
   }
@@ -253,8 +291,8 @@
     } else if lang != none and lang in language-affricates {
       affricates-to-plot = language-affricates.at(lang)
     } else {
-      // For custom input, extract affricates from the converted string
-      affricates-to-plot = consonants-to-plot
+      // For custom input, use only the extracted affricates from braces
+      affricates-to-plot = custom-affricates-string
     }
   }
 
@@ -278,7 +316,7 @@
       } else if lang != none and lang in language-aspirated-affricates {
         aspirated-affricates-to-plot = language-aspirated-affricates.at(lang)
       } else {
-        aspirated-affricates-to-plot = consonants-to-plot
+        aspirated-affricates-to-plot = custom-affricates-string
       }
     }
   }
